@@ -322,7 +322,7 @@ public final class ModuleXmlBuilder
         {
             Artifact depart = element.dependency.getArtifact();
             final Element artifact = new Element("artifact", NS);
-            artifact.setAttribute("name", "${" + depart.getGroupId() + ":" + depart.getArtifactId() + "}");
+            artifact.setAttribute("name", buildNameAttributeValue(depart));
             resources.addContent(artifact);
         } else {
             final Element resource = new Element("resource-root", NS);
@@ -336,6 +336,15 @@ public final class ModuleXmlBuilder
     if( !resources.getChildren().isEmpty() ) {
         root.addContent(resources);
     }
+  }
+
+  private String buildNameAttributeValue(Artifact artifact) {
+    StringBuilder builder = new StringBuilder("${" + artifact.getGroupId() + ":" + artifact.getArtifactId());
+    if (artifact.getClassifier() != null && !artifact.getClassifier().isEmpty()) {
+      builder.append("::" + artifact.getClassifier());
+    }
+    builder.append("}");
+    return builder.toString();
   }
 
   private List<SortElement> createSortedResources(
